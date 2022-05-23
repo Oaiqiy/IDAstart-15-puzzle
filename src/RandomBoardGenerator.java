@@ -32,13 +32,15 @@ public class RandomBoardGenerator {
         int[] loc = Board.findZero(n);
         int x = loc[0], y = loc[1];
 
-        int[][] dir = new int[][]{{1,0},{-1,0},{0,1},{0,-1}};
+        int[][] dir = new int[][]{{1,0},{0,1},{0,-1},{-1,0}};
+        int lastDir = 0;
 
         for(int i = 0 ; i < count;i++){
             int d = random.nextInt(4);
+            if(d == 3-lastDir)
+                d = (d + 1) % 4;
             while(!(x + dir[d][0] >=0 && x + dir[d][0] <length &&  y + dir[d][1] >=0 && y + dir[d][1] <length))
                 d = (d + 1) % 4;
-
 
                 n[x][y] = n[x+dir[d][0]][y+dir[d][1]];
                 n[x+dir[d][0]][y+dir[d][1]] = 0;
@@ -46,8 +48,8 @@ public class RandomBoardGenerator {
                 x += dir[d][0];
                 y += dir[d][1];
 
+                lastDir = d;
         }
-
 
         return n;
     }

@@ -4,7 +4,11 @@ public class Board {
     private int[][] board;
     private int distance;
     private int moved;
+
     private static int[][] target;
+    private static int[][] locArray;
+
+
     private Board parent;
 
     public Board(int[][] board, int moved, Board parent){
@@ -21,11 +25,11 @@ public class Board {
 
     public int calculateDistance(){
         distance = 0;
+        int[][] array = calculateLocArray(board);
 
-        for(int i = 0;i<board.length;i++)
-            for(int j = 0;j< board.length;j++)
-                if(board[i][j] != Board.target[i][j])
-                    distance ++;
+        for(int i = 1;i<array.length;i++){
+            distance += Math.abs(array[i][0] - locArray[i][0])  + Math.abs(array[i][1] - locArray[i][1]);
+        }
 
         return  distance;
     }
@@ -101,6 +105,17 @@ public class Board {
 
     public static void setTarget(int[][] target_){
         target = target_;
+        locArray = calculateLocArray(target);
+    }
+
+    public static int[][] calculateLocArray(int[][] b){
+        int[][] array = new int[b.length * b.length][2];
+        for(int i = 0;i<b.length;i++)
+            for(int j = 0;j<b.length;j++){
+                array[b[i][j]][0] = i;
+                array[b[i][j]][1] = j;
+            }
+        return array;
     }
 
     private void swap(int x1, int y1, int x2, int y2){
@@ -189,17 +204,24 @@ public class Board {
         return ans;
     }
 
+    public int getDistance(){
+        return distance;
+    }
+
+    public Board getParent(){
+        return parent;
+    }
+
     public static void main(String[] args) {
         PriorityQueue<Board> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Board::getCost));
         Set<Long> closed = new HashSet<>();
 
         final int length = 4;
         int[][] start = RandomBoardGenerator.generate(length);
-        int[][] end = RandomBoardGenerator.generate(start,100);
+        int[][] end = RandomBoardGenerator.generate(start,1000000);
 
 //        int[][] start = new int[][]{{12,3,5,4},{6,13,2,14},{15,0,1,7},{8,9,10,11}};
 //        int[][] end = new int[][]{{13,12,5,14},{6,3,0,4},{15,1,7,2},{8,9,10,11}};
-
 
 
 //        int[][] start = {{6,8,1,10},{4,9,5,12},{14,11,7,0},{2,3,13,15}};
@@ -217,10 +239,10 @@ public class Board {
         System.out.println(new Board(start,0,null));
         System.out.println(new Board(end,0,null));
 
-        if(!judge(start,end)){
-            System.out.println("heli");
-            return;
-        }
+//        if(!judge(start,end)){
+//            System.out.println("heli");
+//            return;
+//        }
 
 
 //        while(!judge(start,end)){
