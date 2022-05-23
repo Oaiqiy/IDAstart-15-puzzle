@@ -1,9 +1,11 @@
 import java.util.*;
 
 public class IDAstar {
-    public static void solve(int[][] start, int[][] end){
+    public static Board solve(byte[][] start, byte[][] end){
 
-        assert Board.judge(start,end);
+         if(!Board.judge(start,end))
+             return null;
+
 
 
         PriorityQueue<Board> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Board::getCost));
@@ -34,7 +36,7 @@ public class IDAstar {
         Loop:
         while(true){
 
-            System.out.println(limit);
+            System.out.print(limit + " ");
             Board board = new Board(start,0,null);
             priorityQueue.add(board);
 
@@ -60,19 +62,41 @@ public class IDAstar {
             closed.clear();
         }
 
-        while(ans != null){
-            System.out.println(ans);
-            ans = ans.getParent();
-        }
+
+//        while(ans != null){
+//            System.out.println(ans);
+//            ans = ans.getParent();
+//        }
+
+        return ans;
 
 
     }
 
     public static void main(String[] args) {
-        int[][] start = RandomBoardGenerator.generate(4);
+        byte[][] start = RandomBoardGenerator.generate(4);
         //int[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
-        int[][] end = RandomBoardGenerator.generate(4);
+        byte[][] end = RandomBoardGenerator.generate(4);
         Board.setTarget(end);
         solve(start,end);
+
+        while(true){
+            while(!Board.judge(start,end)){
+
+                start = RandomBoardGenerator.generate(4);
+                //int[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
+                end = RandomBoardGenerator.generate(4);
+            }
+
+            Board.setTarget(end);
+
+            long s = System.currentTimeMillis();
+            solve(start,end);
+            System.out.println("\ntime:  " + (System.currentTimeMillis() -s)/1000);
+            System.out.println("");
+            start = RandomBoardGenerator.generate(4);
+            //int[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
+            end = RandomBoardGenerator.generate(4);
+        }
     }
 }

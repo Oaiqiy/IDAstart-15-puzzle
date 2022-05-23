@@ -3,8 +3,8 @@ import java.util.Random;
 public class RandomBoardGenerator {
     private static final Random random = new Random();
 
-    public static int[][] generate(int length){
-        int[][] board = new int[length][length];
+    public static byte[][] generate(int length){
+        byte[][] board = new byte[length][length];
         int total = length * length;
         boolean[] record = new boolean[total];
 
@@ -16,16 +16,16 @@ public class RandomBoardGenerator {
                 while(record[index % total])
                     index++;
                 record[index%total] = true;
-                board[i][j] = index%total;
+                board[i][j] = (byte) (index % total);
             }
 
         return board;
 
     }
 
-    public static int[][] generate(int[][] board, int count){
+    public static byte[][] generate(byte[][] board, int count){
         int length = board.length;
-        int[][] n = new int[length][length];
+        byte[][] n = new byte[length][length];
         for(int i = 0;i<length;i++)
             System.arraycopy(board[i], 0, n[i], 0, length);
 

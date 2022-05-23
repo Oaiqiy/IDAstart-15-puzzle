@@ -1,26 +1,23 @@
 import java.util.*;
 
 public class Board {
-    private int[][] board;
+    private byte[][] board;
     private int distance;
     private int moved;
 
-    private static int[][] target;
+    private static byte[][] target;
     private static int[][] locArray;
-
 
     private Board parent;
 
-    public Board(int[][] board, int moved, Board parent){
-        this.board = new int[board.length][board.length];
+    public Board(byte[][] board, int moved, Board parent){
+        this.board = new byte[board.length][board.length];
         for(int i = 0;i < board.length;i++)
             System.arraycopy(board[i], 0, this.board[i], 0, board.length);
         this.moved = moved;
         this.parent = parent;
         distance = calculateDistance();
     }
-
-
 
 
     public int calculateDistance(){
@@ -77,15 +74,18 @@ public class Board {
 
     }
 
+
+
     public long hash(){
         long result = 0;
-        for (int[] ints : board)
+        for (byte[] ints : board)
             for (int j = 0; j < board.length; j++) {
                 result += ints[j];
                 result <<= 4;
             }
         return result;
     }
+
 
     public static int[][] decode(int length, long code){
         int[][] b = new int[length][length];
@@ -103,12 +103,12 @@ public class Board {
         return b;
     }
 
-    public static void setTarget(int[][] target_){
+    public static void setTarget(byte[][] target_){
         target = target_;
         locArray = calculateLocArray(target);
     }
 
-    public static int[][] calculateLocArray(int[][] b){
+    public static int[][] calculateLocArray(byte[][] b){
         int[][] array = new int[b.length * b.length][2];
         for(int i = 0;i<b.length;i++)
             for(int j = 0;j<b.length;j++){
@@ -119,7 +119,7 @@ public class Board {
     }
 
     private void swap(int x1, int y1, int x2, int y2){
-        int t = board[x1][y1];
+        byte t = board[x1][y1];
         board[x1][y1] = board[x2][y2];
         board[x2][y2] = t;
     }
@@ -145,7 +145,7 @@ public class Board {
         return sb.toString();
     }
 
-    public static boolean judge(int[][] one , int[][] two){
+    public static boolean judge(byte[][] one , byte[][] two){
 
         int reverseOne = reverseOrderCount(one);
         int reverseTwo = reverseOrderCount(two);
@@ -166,7 +166,7 @@ public class Board {
 
     }
 
-    public static int[] findZero(int[][] board){
+    public static int[] findZero(byte[][] board){
 
         int length = board.length;
         int[] result = new int[2];
@@ -180,7 +180,7 @@ public class Board {
         return result;
     }
 
-    public static int reverseOrderCount(int[][] board){
+    public static int reverseOrderCount(byte[][] board){
         int length = board.length;
         int[] record = new int[length * length];
         int index = 0;
@@ -217,8 +217,8 @@ public class Board {
         Set<Long> closed = new HashSet<>();
 
         final int length = 4;
-        int[][] start = RandomBoardGenerator.generate(length);
-        int[][] end = RandomBoardGenerator.generate(start,1000000);
+        byte[][] start = RandomBoardGenerator.generate(length);
+        byte[][] end = RandomBoardGenerator.generate(start,1000000);
 
 //        int[][] start = new int[][]{{12,3,5,4},{6,13,2,14},{15,0,1,7},{8,9,10,11}};
 //        int[][] end = new int[][]{{13,12,5,14},{6,3,0,4},{15,1,7,2},{8,9,10,11}};
