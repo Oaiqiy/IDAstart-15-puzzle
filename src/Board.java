@@ -2,15 +2,15 @@ import java.util.*;
 
 public class Board {
     private byte[][] board;
-    private int distance;
-    private int moved;
+    private byte distance;
+    private byte moved;
 
     private static byte[][] target;
     private static int[][] locArray;
 
     private Board parent;
 
-    public Board(byte[][] board, int moved, Board parent){
+    public Board(byte[][] board, byte moved, Board parent){
         this.board = new byte[board.length][board.length];
         for(int i = 0;i < board.length;i++)
             System.arraycopy(board[i], 0, this.board[i], 0, board.length);
@@ -20,7 +20,7 @@ public class Board {
     }
 
 
-    public int calculateDistance(){
+    public byte calculateDistance(){
         distance = 0;
         int[][] array = calculateLocArray(board);
 
@@ -44,28 +44,29 @@ public class Board {
         y = loc[1];
 
         List<Board> result = new ArrayList<>(4);
-
+        byte nextMoved = moved;
+        nextMoved++;
         if(x > 0){
             swap(x-1,y,x,y);
-            result.add(new Board(board,moved+1,this));
+            result.add(new Board(board,nextMoved,this));
             swap(x-1,y,x,y);
         }
 
         if(x < length - 1){
             swap(x+1,y,x,y);
-            result.add(new Board(board,moved+1,this));
+            result.add(new Board(board,nextMoved,this));
             swap(x+1,y,x,y);
         }
 
         if(y > 0){
             swap(x,y-1,x,y);
-            result.add(new Board(board,moved+1,this));
+            result.add(new Board(board,nextMoved,this));
             swap(x,y-1,x,y);
         }
 
         if(y < length - 1){
             swap(x,y+1,x,y);
-            result.add(new Board(board,moved+1,this));
+            result.add(new Board(board,nextMoved,this));
             swap(x,y+1 ,x,y);
         }
 
@@ -75,6 +76,24 @@ public class Board {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board1 = (Board) o;
+
+        for(int i = 0;i<board.length;i++)
+            for(int j = 0;j<board.length;j++)
+                if(board[i][j] != board1.board[i][j])
+                    return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) hash();
+    }
 
     public long hash(){
         long result = 0;
@@ -214,12 +233,17 @@ public class Board {
 
     public static void main(String[] args) {
         PriorityQueue<Board> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Board::getCost));
-        Set<Long> closed = new HashSet<>();
+        Set<Board> closed = new HashSet<>();
+
+
 
         final int length = 4;
         byte[][] start = RandomBoardGenerator.generate(length);
-        byte[][] end = RandomBoardGenerator.generate(start,1000000);
+        byte[][] end = RandomBoardGenerator.generate(start,100000);
 
+        Board.setTarget(end);
+
+        System.out.println(closed.size());
 //        int[][] start = new int[][]{{12,3,5,4},{6,13,2,14},{15,0,1,7},{8,9,10,11}};
 //        int[][] end = new int[][]{{13,12,5,14},{6,3,0,4},{15,1,7,2},{8,9,10,11}};
 
@@ -234,10 +258,9 @@ public class Board {
 //        }
 
 
-        Board.setTarget(end);
 
-        System.out.println(new Board(start,0,null));
-        System.out.println(new Board(end,0,null));
+        System.out.println(new Board(start,(byte) 0,null));
+        System.out.println(new Board(end,(byte) 0,null));
 
 //        if(!judge(start,end)){
 //            System.out.println("heli");
@@ -252,7 +275,7 @@ public class Board {
 //        }
 
 
-        Board board = new Board(start,0,null);
+        Board board = new Board(start,(byte) 0,null);
         priorityQueue.add(board);
 
         Board ans = null;
@@ -264,10 +287,10 @@ public class Board {
                 break;
             }
 
-            closed.add(b.hash());
+            closed.add(b);
             List<Board> next = b.move();
             for(Board x : next){
-                if(closed.contains(x.hash()))
+                if(closed.contains(x))
                     continue;
                 priorityQueue.add(x);
             }
