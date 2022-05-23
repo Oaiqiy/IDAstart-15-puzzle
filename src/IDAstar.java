@@ -6,79 +6,77 @@ public class IDAstar {
          if(!Board.judge(start,end))
              return null;
 
+         Deque<Board> deque = new LinkedList<>();
+         HashMap<Long,Byte> closed = new HashMap<>();
 
-
-        PriorityQueue<Board> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Board::getCost));
-        Set<Long> closed = new HashSet<>();
-
-        final int length = 4;
 
         Board.setTarget(end);
 
-        System.out.println(new Board(start,0,null));
-        System.out.println(new Board(end,0,null));
 
-//        if(!judge(start,end)){
-//            System.out.println("heli");
-//            return;
-//        }
+        Board ans;
+        int limit = new Board(start,(byte) 0,null).getDistance();
 
-
-//        while(!judge(start,end)){
-//            System.out.println("cannot");
-//            start = RandomBoardGenerator.generate(length);
-//            end = RandomBoardGenerator.generate(length);
-//        }
-
-        Board ans = null;
-        int limit = new Board(start,0,null).getDistance();
-
-        Loop:
+        IDAstarLoop:
         while(true){
 
-            System.out.print(limit + " ");
-            Board board = new Board(start,0,null);
-            priorityQueue.add(board);
 
+            Board board = new Board(start,(byte) 0,null);
 
-            while(!priorityQueue.isEmpty()){
-                Board b = priorityQueue.poll();
-                //System.out.println(b);
-                if(b.getDistance() == 0){
-                    ans = b;
-                    break Loop;
-                }
+            deque.add(board);
 
-                closed.add(b.hash());
+            while(!deque.isEmpty()){
+                Board b = deque.pollLast();
+
                 List<Board> next = b.move();
                 for(Board x : next){
-                    if(closed.contains(x.hash()) || x.getCost() > limit)
-                        continue;
-                    priorityQueue.add(x);
+
+                    if(x.getDistance() == 0){
+                        ans = x;
+                        break IDAstarLoop;
+                    }
+
+                    byte cost = (byte) x.getCost();
+
+                    if(cost > limit)
+                        continue ;
+
+
+                    Long hash = x.hash();
+                    if(closed.containsKey(hash)){
+                        if(cost < closed.get(hash)){
+                            closed.replace(hash, cost);
+                            deque.addLast(x);
+                        }
+                    }else {
+                        closed.put(hash,cost);
+                        deque.addLast(x);
+                    }
+
                 }
 
             }
-            limit++;
+
+            limit += 2;
             closed.clear();
+
         }
 
-
-//        while(ans != null){
-//            System.out.println(ans);
-//            ans = ans.getParent();
-//        }
-
         return ans;
-
 
     }
 
     public static void main(String[] args) {
         byte[][] start = RandomBoardGenerator.generate(4);
-        //int[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
+        //byte[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
         byte[][] end = RandomBoardGenerator.generate(4);
+
+//        start = new byte[][]{{10,15,3,8},{1,2,12,5},{9,11,7,13},{6,14,0,4}};
+//        end = new byte[][]{{15,5,8,1},{2,0,3,14},{4,12,6,7},{9,10,11,13}};
+
+        start = new byte[][]{{9,4,10,2},{13,5,11,14},{15,6,0,7},{1,12,3,8}};
+        end = new byte[][]{{14,6,15,7},{2,11,5,9},{10,8,3,4},{12,0,13,1}};
         Board.setTarget(end);
-        solve(start,end);
+//        solve(start,end);
 
         while(true){
             while(!Board.judge(start,end)){
@@ -91,8 +89,16 @@ public class IDAstar {
             Board.setTarget(end);
 
             long s = System.currentTimeMillis();
-            solve(start,end);
+            Board a = solve(start,end);
             System.out.println("\ntime:  " + (System.currentTimeMillis() -s)/1000);
+            int count = 0;
+            while(a != null){
+                //System.out.println(a);
+                count++;
+                a = a.getParent();
+            }
+            System.out.println(count);
+
             System.out.println("");
             start = RandomBoardGenerator.generate(4);
             //int[][] end = RandomBoardGenerator.generate(start,Integer.MAX_VALUE);
