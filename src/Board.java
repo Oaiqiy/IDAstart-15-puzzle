@@ -7,6 +7,7 @@ public class Board {
 
     private static byte[][] target;
     private static int[][] locArray;
+    private static final byte zero = 0;
 
     private Board parent;
 
@@ -17,6 +18,10 @@ public class Board {
         this.moved = moved;
         this.parent = parent;
         distance = calculateDistance();
+    }
+
+    public Board(byte[][] board){
+        this(board,zero,null);
     }
 
 
@@ -30,6 +35,17 @@ public class Board {
 
         return  distance;
     }
+
+    public static int[][] calculateLocArray(byte[][] b){
+        int[][] array = new int[b.length * b.length][2];
+        for(int i = 0;i<b.length;i++)
+            for(int j = 0;j<b.length;j++){
+                array[b[i][j]][0] = i;
+                array[b[i][j]][1] = j;
+            }
+        return array;
+    }
+
 
     public int getCost(){
         return moved + distance;
@@ -127,42 +143,8 @@ public class Board {
         locArray = calculateLocArray(target);
     }
 
-    public static int[][] calculateLocArray(byte[][] b){
-        int[][] array = new int[b.length * b.length][2];
-        for(int i = 0;i<b.length;i++)
-            for(int j = 0;j<b.length;j++){
-                array[b[i][j]][0] = i;
-                array[b[i][j]][1] = j;
-            }
-        return array;
-    }
 
-    private void swap(int x1, int y1, int x2, int y2){
-        byte t = board[x1][y1];
-        board[x1][y1] = board[x2][y2];
-        board[x2][y2] = t;
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        for(int i = 0;i< board.length;i++){
-            sb.append("{");
-            for(int j = 0;j< board.length;j++){
-                sb.append(board[i][j]);
-                if(j != board.length - 1)
-                    sb.append(',');
-            }
-
-            sb.append("}");
-            if(i != board.length - 1)
-                sb.append(',');
-        }
-        sb.append("}");
-
-        return sb.toString();
-    }
 
     public static boolean judge(byte[][] one , byte[][] two){
 
@@ -180,8 +162,6 @@ public class Board {
             else
                 return (locOne[0] - locTwo[0]) % 2 != 0;
         }
-
-
 
     }
 
@@ -223,6 +203,29 @@ public class Board {
         return ans;
     }
 
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for(int i = 0;i< board.length;i++){
+            sb.append("{");
+            for(int j = 0;j< board.length;j++){
+                sb.append(board[i][j]);
+                if(j != board.length - 1)
+                    sb.append(',');
+            }
+
+            sb.append("}");
+            if(i != board.length - 1)
+                sb.append(',');
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+
     public int getDistance(){
         return distance;
     }
@@ -230,6 +233,17 @@ public class Board {
     public Board getParent(){
         return parent;
     }
+
+    public byte[][] getBoard() {
+        return board;
+    }
+
+    private void swap(int x1, int y1, int x2, int y2){
+        byte t = board[x1][y1];
+        board[x1][y1] = board[x2][y2];
+        board[x2][y2] = t;
+    }
+
 
     public static void main(String[] args) {
         PriorityQueue<Board> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Board::getCost));
@@ -244,35 +258,11 @@ public class Board {
         Board.setTarget(end);
 
         System.out.println(closed.size());
-//        int[][] start = new int[][]{{12,3,5,4},{6,13,2,14},{15,0,1,7},{8,9,10,11}};
-//        int[][] end = new int[][]{{13,12,5,14},{6,3,0,4},{15,1,7,2},{8,9,10,11}};
-
-
-//        int[][] start = {{6,8,1,10},{4,9,5,12},{14,11,7,0},{2,3,13,15}};
-//        int[][] end = {{4,6,8,10},{1,11,5,9},{14,15,12,13},{0,2,3,7}};
-//        while(judge(start,end)){
-//            start = RandomBoardGenerator.generate(length);
-//            end = RandomBoardGenerator.generate(start,10000);
-//
-//            System.out.println("--");
-//        }
 
 
 
         System.out.println(new Board(start,(byte) 0,null));
         System.out.println(new Board(end,(byte) 0,null));
-
-//        if(!judge(start,end)){
-//            System.out.println("heli");
-//            return;
-//        }
-
-
-//        while(!judge(start,end)){
-//            System.out.println("cannot");
-//            start = RandomBoardGenerator.generate(length);
-//            end = RandomBoardGenerator.generate(length);
-//        }
 
 
         Board board = new Board(start,(byte) 0,null);
@@ -304,8 +294,8 @@ public class Board {
             ans = ans.parent;
         }
 
-
     }
+
 
 
 }

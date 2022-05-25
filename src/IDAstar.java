@@ -3,7 +3,9 @@ import java.util.*;
 public class IDAstar {
     public static Board solve(byte[][] start, byte[][] end){
 
-         if(!Board.judge(start,end))
+        System.out.println("IDA* start at " + new Date());
+
+        if(!Board.judge(start,end))
              return null;
 
          Deque<Board> deque = new LinkedList<>();
@@ -14,14 +16,16 @@ public class IDAstar {
 
 
         Board ans;
-        int limit = new Board(start,(byte) 0,null).getDistance();
+        Board board = new Board(start,(byte) 0,null);
+        int limit = board.getDistance();
+        if(limit == 0)
+            return board;
+
 
         IDAstarLoop:
         while(true){
 
-
-            Board board = new Board(start,(byte) 0,null);
-
+            System.out.println("iterate: " + limit + " at " + new Date());
             deque.add(board);
 
             while(!deque.isEmpty()){
@@ -60,6 +64,8 @@ public class IDAstar {
             closed.clear();
 
         }
+
+        System.out.println("IDA* finish at " + new Date());
 
         return ans;
 

@@ -3,6 +3,12 @@ import java.util.Random;
 public class RandomBoardGenerator {
     private static final Random random = new Random();
 
+    /**
+     * random generate a board with length
+     * @param length the board's length
+     * @return a board
+     */
+
     public static byte[][] generate(int length){
         byte[][] board = new byte[length][length];
         int total = length * length;
@@ -18,10 +24,16 @@ public class RandomBoardGenerator {
                 record[index%total] = true;
                 board[i][j] = (byte) (index % total);
             }
-
         return board;
 
     }
+
+    /**
+     * generate a board from an existing board
+     * @param board root board
+     * @param count move count
+     * @return a new board
+     */
 
     public static byte[][] generate(byte[][] board, int count){
         int length = board.length;
